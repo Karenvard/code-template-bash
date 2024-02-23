@@ -1,0 +1,83 @@
+#!/bin/bash
+
+if [[ $# -ne 3 ]]; then
+    echo "Usage: $0 programming_language framework_name folder"
+    exit 1
+fi
+
+
+programming_langugage="$1"
+framework="$2"
+folder="$3"
+
+error="false"
+
+if [ "$folder" != "." ]; then
+  mkdir "$folder"
+  cd "$folder"
+fi
+
+if [ "$programming_langugage" == "python" ]; then
+    if [ "$framework" == "fastapi" ]; then
+        mkdir src
+        cd src
+        mkdir routes handlers models
+        cd ..
+        echo -e 'fastapi\nuvicorn' > requirements.txt
+        echo 'from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"message": "Hello, FastAPI"}' > main.py
+
+        echo "Basic FastAPI project structure created."
+
+    elif [ "$framework" == "django" ]; then
+        django-admin startproject .
+        echo "Basic Django project structure created."
+    else
+        echo "Invalid python framework specified"
+        error="true"
+    fi
+
+elif [ "$programming_langugage" == "javascript" ]; then
+    if [ "$framework" == "react" ]; then
+        npx create-react-app .
+        cd src
+        rm App.css index.css logo.svg reportWebVitals.js setupTests.js App.test.js
+        echo 'import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);' > index.js
+        echo '
+function App() {
+  return <div>
+    
+  </div>;
+}
+
+export default App;' > App.js
+        mkdir components utils
+        cd utils
+        mkdir api hooks
+        cd ..
+        echo "Basic React project structure created."
+    else
+        echo "Invalid javascript framework specified"
+        error="true"
+    fi
+
+else
+    echo "Invalid programming language specified"
+    error="true"
+fi
+
+
+if [[ "$error" == "true" ]] && [ "$folder" != "." ]; then
+    cd ..
+    rm -rf "$folder"
+    exit 1
+fi
